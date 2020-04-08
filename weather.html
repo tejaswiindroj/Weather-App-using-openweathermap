@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    <link rel="stylesheet" type="text/css" href="weather.css">
+</head>
+<body>
+   <section class="top-banner">
+        <div class="container">
+          <h1 class="heading"> Weather App using Openweathermap</h1>
+          <form>
+            <input type="text" placeholder="Enter the city name" autofocus>
+            <button type="submit">SUBMIT</button>
+            <span class="msg"></span>
+          </form>
+        </div>
+      </section>
+      <section class="ajax-section">
+        <div class="container">
+          <ul class="cities"></ul>
+        </div>
+      </section>
+ </body>     
+      <script>
+        // SEARCH BY USING A CITY NAME (e.g. atlanta) OR A COMMA-SEPARATED CITY NAME ALONG WITH THE COUNTRY CODE (e.g. atlanta,usa)
+             const form = document.querySelector(".top-banner form");
+             const input = document.querySelector(".top-banner input");
+             const msg = document.querySelector(".top-banner .msg");
+             const list = document.querySelector(".ajax-section .cities");
+
+        // Need to SignUp HERE: https://home.openweathermap.org/users/sign_up*/
+             const apiKey = "b3a7d5878f80e4c571adf7be67fab3ba";
+
+             form.addEventListener("submit", e => {
+                   e.preventDefault();
+                   const listItems = list.querySelectorAll(".ajax-section .city");
+                 const inputVal = input.value;
+
+  //ajax code goes here
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${inputVal}&appid=${apiKey}&units=metric`;
+   
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const { main, name, sys, weather } = data;
+      const icon = `https://openweathermap.org/img/wn/${
+        weather[0]["icon"]
+      }@2x.png`;
+
+      const li = document.createElement("li");
+      li.classList.add("city");
+      const markup = `
+        <h2 class="city-name" data-name="${name},${sys.country}">
+          <span>${name}</span>
+        </h2>
+        <div class="city-temp">${Math.round(main.temp*9/5+32)}<sup>°F</sup></div>
+        <figure>
+          <img class="city-icon" src=${icon} alt=${weather[0]["main"]}>
+          <figcaption>${weather[0]["description"]}</figcaption>
+        </figure>
+      `;
+      li.innerHTML = markup;
+      list.appendChild(li);
+    })
+    .catch(() => {
+      msg.textContent = "Please enter a valid city";
+    });
+
+  msg.textContent = "";
+  form.reset();
+  input.focus();
+});
+      </script>
+</html>
